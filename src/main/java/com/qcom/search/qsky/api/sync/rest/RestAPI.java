@@ -31,9 +31,15 @@ public class RestAPI {
                        @RequestParam("payload") String payload)
             throws Exception {
 
-        System.out.println("Create + Project : "+project+" Type : "+type+" TS "+ts+" Payload "+payload+" "+producer.getValue());
+        System.out.println("Create + Project : "+project+" Type : "+type+" TS "+ts+" Payload "+payload);
 
-        return new Result("id", Result.Status.SUCCESS);
+        String messageKey = project+":"+type;
+        boolean success = producer.sendMessage(messageKey, payload, MessageProducer.Operation.CREATE);
+
+        if(success)
+            return new Result("id", Result.Status.SUCCESS);
+        else
+            return new Result("id", Result.Status.FAIL);
     }
 
     @RequestMapping(
@@ -43,7 +49,7 @@ public class RestAPI {
     public Result update(@RequestParam("id") String id, @RequestParam("payload") String payload)
             throws Exception {
 
-        System.out.println("Update : "+payload+" "+producer.getValue());
+        System.out.println("Update : "+payload);
 
         return new Result(id, Result.Status.SUCCESS);
 
@@ -56,7 +62,7 @@ public class RestAPI {
     public Result done(@RequestParam("id") String id, @RequestParam("payload") String payload)
             throws Exception {
 
-        System.out.println("Done : "+payload+" "+producer.getValue());
+        System.out.println("Done : "+payload);
 
         return new Result(id, Result.Status.SUCCESS);
 
