@@ -21,11 +21,8 @@ public class MessageProducer {
     enum Operation {
         CREATE, UPDATE, DONE
     }
-    @Value("${create.topic}")
+    @Value("${cu.topic}")
     private String createTopic;
-
-    @Value("${update.topic}")
-    private String updateTopic;
 
     @Value("${done.topic}")
     private String doneTopic;
@@ -48,9 +45,7 @@ public class MessageProducer {
 
     boolean sendMessage(String key, String message, Operation operation) {
         String topicStr = this.createTopic;
-        if(operation.equals(Operation.UPDATE))
-            topicStr = this.updateTopic;
-        else if(operation.equals(Operation.DONE))
+        if(operation.equals(Operation.DONE))
             topicStr = this.doneTopic;
 
         ProducerRecord rec = new ProducerRecord(topicStr, key, message);
