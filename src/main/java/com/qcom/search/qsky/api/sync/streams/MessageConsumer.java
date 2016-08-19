@@ -23,7 +23,6 @@ public class MessageConsumer {
         //arg[0] - topic
         //arg[1] - group id
         //arg[2] - client id
-        //arg[3] - fileName
 
         //FileWriter fw = new FileWriter(args[3], true);
         //BufferedWriter bw = new BufferedWriter(fw);
