@@ -1,4 +1,4 @@
-package com.qcom.search.qsky.api.sync.consumer;
+package com.qcom.search.qsky.api.sync.streams;
 
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
