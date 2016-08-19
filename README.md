@@ -37,3 +37,11 @@ Running the REST Application
 java -cp /tmp/uber-qsky-sync-maprstreams-api-0.1.jar:`mapr classpath` com.qcom.search.qsky.api.sync.Application
 
 NOTE - add the `mapr classpath` to the end of the classpath as shown above.
+
+The Project also has a sample consumer that can be used to test the messages consumption. Following is the command
+
+java -cp /tmp/uber-qsky-sync-maprstreams-api-0.1.jar:`mapr classpath` com.qcom.search.qsky.api.sync.streams.MessageConsumer /qsky_streams/devstreams:cudtopic g1 c1
+
+Parameter 1 - is the topic that needs to be listened to
+Parameter 2 - group id (could be anything. If you use the previous group only new messages will be consumed)
+Parameter 2 - consumer id (could be anything. If you use the previous group only new messages will be consumed)
