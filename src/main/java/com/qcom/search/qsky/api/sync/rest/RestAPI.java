@@ -1,6 +1,7 @@
 package com.qcom.search.qsky.api.sync.rest;
 
 import com.qcom.search.qsky.api.sync.streams.MessageProducer;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/sync/rest")
 public class RestAPI {
+
+    private final static Logger logger = Logger.getLogger(RestAPI.class);
 
     private MessageProducer producer;
     private enum CRUD_OPERATION {
@@ -36,8 +39,6 @@ public class RestAPI {
                        @RequestParam("user") String user,
                        @RequestParam("payload") String payload)
             throws Exception {
-
-        System.out.println("Create + Project : "+project+" Simulation : "+simId+" User "+user+" Payload "+payload);
 
         String docId = UUID.randomUUID().toString();
         String messageKey = user+"_"+project+"_"+simId+"_"+docId;
@@ -76,7 +77,9 @@ public class RestAPI {
     }
 
     private Result sendMessage(String id, String payload, MessageProducer.OPERATION operation){
-        System.out.println("Update : "+payload);
+        if(logger.isDebugEnabled()){
+            logger.debug(operation+" Key "+id+" Payload "+payload);
+        }
 
         boolean success = producer.sendMessage(id, payload, operation);
         if(success)

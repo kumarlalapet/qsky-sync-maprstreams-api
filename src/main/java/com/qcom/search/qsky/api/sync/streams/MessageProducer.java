@@ -3,6 +3,7 @@ package com.qcom.search.qsky.api.sync.streams;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,8 @@ import java.util.concurrent.Future;
 @Component
 @Scope("singleton")
 public class MessageProducer {
+
+    private final static Logger logger = Logger.getLogger(MessageProducer.class);
 
     public enum OPERATION {
         SYNC, ASYNC
@@ -54,15 +57,20 @@ public class MessageProducer {
         Future<RecordMetadata> future = producer.send(rec);
 
         if(operation.equals(OPERATION.SYNC)) {
+
+            if(logger.isDebugEnabled()){
+                logger.debug("Sending message sync for key "+key+" Operation "+operation);
+            }
+
             producer.flush();
             RecordMetadata metadata = null;
 
             try {
                 metadata = future.get();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("Error while sending message sync for key "+key+" Operation "+operation,e);
             } catch (ExecutionException e) {
-                e.printStackTrace();
+                logger.error("Error while sending message sync for key "+key+" Operation "+operation,e);
             }
 
             if(metadata == null) {
@@ -70,13 +78,18 @@ public class MessageProducer {
             }
             return true;
         } else {
+            if(logger.isDebugEnabled()){
+                logger.debug("Sent message async for key "+key+" Operation "+operation);
+            }
             return true;
         }
     }
 
     @PreDestroy
     public void shutdown() {
-        System.out.println("Shutting down Kafka Producer...");
+        if(logger.isDebugEnabled()){
+            logger.debug("Shutting down Kafka Producer...");
+        }
         this.producer.close();
     }
 }
