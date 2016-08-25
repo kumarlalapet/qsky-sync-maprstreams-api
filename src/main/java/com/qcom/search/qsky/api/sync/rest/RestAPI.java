@@ -2,6 +2,7 @@ package com.qcom.search.qsky.api.sync.rest;
 
 import com.qcom.search.qsky.api.sync.streams.MessageProducer;
 import org.apache.log4j.Logger;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,12 +77,13 @@ public class RestAPI {
         return sendMessage(id, payload, MessageProducer.OPERATION.SYNC);
     }
 
-    private Result sendMessage(String id, String payload, MessageProducer.OPERATION operation){
+    private Result sendMessage(String id, String payload, MessageProducer.OPERATION operation) throws JSONException {
         if(logger.isDebugEnabled()){
             logger.debug(operation+" Key "+id+" Payload "+payload);
         }
 
         boolean success = producer.sendMessage(id, payload, operation);
+        //boolean success = producer.sendMessageCopy();
         if(success)
             return new Result(id, Result.Status.SUCCESS);
         else
@@ -89,8 +91,10 @@ public class RestAPI {
     }
 
     private String addRootToPayload(String payload, CRUD_OPERATION crudOperation) {
-        String finalJson = "{\"root\":{\"operation\":\""+crudOperation+"\",\"rawmsg\":"+payload+"}}";
+        String finalJson = "{\"root\":{\"operation\":{\"key\":\""+crudOperation+"\"},\"rawmsg\":"+payload+"}}";
         return finalJson;
+        //return payload;
+        //return "{\"root\" : { \"Msg\" : \"1\"}}" ;
     }
 
 }

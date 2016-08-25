@@ -4,6 +4,8 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -50,10 +52,12 @@ public class MessageProducer {
 
     }
 
-    public boolean sendMessage(String key, String message, OPERATION operation) {
+    public boolean sendMessage(String key, String message, OPERATION operation) throws JSONException {
         String topicStr = this.createUpdateDoneTopic;
 
-        ProducerRecord rec = new ProducerRecord(topicStr, key, message);
+        //JSONObject jsonObj = new JSONObject(message);
+
+        ProducerRecord<String, String> rec = new ProducerRecord<String, String>(topicStr, key, message);
         Future<RecordMetadata> future = producer.send(rec);
 
         if(operation.equals(OPERATION.SYNC)) {
@@ -91,5 +95,29 @@ public class MessageProducer {
             logger.debug("Shutting down Kafka Producer...");
         }
         this.producer.close();
+    }
+
+
+    public boolean sendMessageCopy() throws JSONException {
+        int numMessages = 1;
+        String topic = this.createUpdateDoneTopic;
+        for (int i = 0; i < numMessages; i++) {
+            /**
+            String messageText = "{\"root\" : { \"Msg\" : \"" + i + "\"}}" ;
+            JSONObject jsonObj = new JSONObject(messageText);
+            ProducerRecord<String, String> rec = new ProducerRecord<String, String>(topic, "key" + i,jsonObj.toString());
+             **/
+
+            String messageText = "root : Msg : " + i;
+            ProducerRecord<String, String> rec = new ProducerRecord<String, String>(topic, "key" + i,messageText);
+
+            // Send the record to the producer client library.
+            producer.send(rec);
+            System.out.println("Sent message number " + i);
+            System.out.println("Msg " + messageText);
+
+        }
+        //producer.close();
+        return true;
     }
 }
